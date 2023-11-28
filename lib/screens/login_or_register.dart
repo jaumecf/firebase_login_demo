@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+import 'package:firebase_login_demo/providers/login_provider.dart';
 
 class LoginOrRegisterScreen extends StatefulWidget {
   @override
@@ -11,19 +13,16 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
   late Animation<double> animation;
   GlobalKey<FormState> _key = GlobalKey();
 
-  bool isLogin = false;
-  bool isRegister = false;
-  late List<bool> _selectedEvent = [isLogin, isRegister];
-
   RegExp emailRegExp =
       new RegExp(r'^\w+[\w-\.]*\@\w+((-\w+)|(\w*))\.[a-z]{2,3}$');
   RegExp contRegExp = new RegExp(r'^([1-zA-Z0-1@.\s]{1,255})$');
   String? _correu;
   String? _passwd;
   String missatge = '';
+  String errorCode = '';
   bool _isChecked = false;
 
-  bool _isLoading = false;
+  late var loginProvider;
 
   initState() {
     super.initState();
@@ -45,6 +44,13 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
   }
 
   @override
+  void didChangeDependencies() {
+    // TODO: implement didChangeDependencies
+    super.didChangeDependencies();
+    loginProvider = Provider.of<LoginProvider>(context);
+  }
+
+  @override
   dispose() {
     // Es important SEMPRE realitzar el dispose del controller.
     controller.dispose();
@@ -62,32 +68,20 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
               height: 200,
               child: AnimatedLogo(animation: animation),
             ),
-            if (isLogin || isRegister) loginOrRegisterForm(),
+            if (loginProvider.isLoginOrRegister) loginOrRegisterForm(),
             SizedBox(height: 100),
-            loginOrRegister()
+            loginOrRegisterButtons()
           ],
         ),
       ),
     );
   }
 
-  Widget loginOrRegister() {
+  Widget loginOrRegisterButtons() {
     return ToggleButtons(
       direction: Axis.horizontal,
       onPressed: (int index) {
-        setState(() {
-          // The botó que està seleccionat esta a true, tots els altres a false
-          for (int i = 0; i < _selectedEvent.length; i++) {
-            _selectedEvent[i] = i == index;
-          }
-          if (index == 0) {
-            isLogin = true;
-            isRegister = false;
-          } else {
-            isLogin = false;
-            isRegister = true;
-          }
-        });
+        loginProvider.opcioMenu(index);
       },
       borderRadius: const BorderRadius.all(Radius.circular(8)),
       selectedBorderColor: Colors.blue[800],
@@ -98,7 +92,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
         minHeight: 40.0,
         minWidth: 120.0,
       ),
-      isSelected: _selectedEvent,
+      isSelected: loginProvider.selectedEvent,
       children: events,
     );
   }
@@ -107,7 +101,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
       children: <Widget>[
-        Text(isLogin ? 'Inicia sessió' : 'Registra\'t'),
+        Text(loginProvider.isLogin ? 'Inicia sessió' : 'Registra\'t'),
         Container(
           width: 300.0,
           child: Form(
@@ -159,7 +153,7 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
                   ),
                   onSaved: (text) => _passwd = text,
                 ),
-                isLogin
+                loginProvider.isLogin
                     ? CheckboxListTile(
                         value: _isChecked,
                         onChanged: (value) {
@@ -178,7 +172,9 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
                     color: Colors.blue[800],
                   ),
                 ),
-                _isLoading ? CircularProgressIndicator() : Container(),
+                loginProvider.isLoading
+                    ? CircularProgressIndicator()
+                    : Container(),
               ],
             ),
           ),
@@ -190,15 +186,16 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
   _loginRegisterRequest() async {
     if (_key.currentState!.validate()) {
       _key.currentState!.save();
-      setState(() {
-        _isLoading = true;
-      });
       // Aquí es realitzaria la petició de login a l'API o similar
+      await loginProvider.loginOrRegister(_correu, _passwd);
       missatge = 'Gràcies \n $_correu \n $_passwd';
-      setState(() {
-        _isLoading = false;
-      });
-      Navigator.of(context).pushReplacementNamed('/', arguments: missatge);
+      if (loginProvider.accesGranted) {
+        Navigator.of(context).pushReplacementNamed('/', arguments: missatge);
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(loginProvider.errorMessage),
+        ));
+      }
     }
   }
 }

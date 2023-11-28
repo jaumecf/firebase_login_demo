@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:provider/provider.dart';
+
+import '../providers/login_provider.dart';
 
 class HomeScreen extends StatelessWidget {
   const HomeScreen({Key? key}) : super(key: key);
@@ -6,7 +9,7 @@ class HomeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final missatge = ModalRoute.of(context)!.settings.arguments as String;
-
+    final loginProvider = Provider.of<LoginProvider>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: Text('Inici'),
@@ -16,6 +19,7 @@ class HomeScreen extends StatelessWidget {
             icon: Icon(Icons.logout),
             onPressed: () {
               // TODO: Logout
+              loginProvider.logOut();
               Navigator.of(context).pushReplacementNamed('logOrReg');
             },
           )
