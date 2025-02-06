@@ -64,13 +64,15 @@ class _LoginOrRegisterScreenState extends State<LoginOrRegisterScreen>
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
+            Expanded(child: SizedBox()),
             Container(
               height: 200,
               child: AnimatedLogo(animation: animation),
             ),
             if (loginProvider.isLoginOrRegister) loginOrRegisterForm(),
-            SizedBox(height: 100),
-            loginOrRegisterButtons()
+            Expanded(child: SizedBox()),
+            loginOrRegisterButtons(),
+            Expanded(child: SizedBox())
           ],
         ),
       ),

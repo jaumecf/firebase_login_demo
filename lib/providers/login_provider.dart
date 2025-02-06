@@ -29,7 +29,7 @@ class LoginProvider extends ChangeNotifier {
       }
       user = userLogged!.user;
     } catch (error) {
-      //print(getMessageFromErrorCode(error));
+      //print(error.toString());
       errorMessage = getMessageFromErrorCode(error);
       notifyListeners();
     }
@@ -40,12 +40,12 @@ class LoginProvider extends ChangeNotifier {
 
   void logOut() {
     userLogged = null;
-    user = null;
     accesGranted = false;
     isLogin = false;
     isRegister = false;
     errorMessage = '';
     selectedEvent = [false, false];
+    user = null;
   }
 
   void opcioMenu(int index) {

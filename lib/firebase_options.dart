@@ -57,7 +57,7 @@ class DefaultFirebaseOptions {
     appId: '1:1080194111365:android:7b839883958ed49d1b96ec',
     messagingSenderId: '1080194111365',
     projectId: 'fir-login-demo-8a89a',
-    storageBucket: 'fir-login-demo-8a89a.appspot.com',
+    storageBucket: 'fir-login-demo-8a89a.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
@@ -65,7 +65,7 @@ class DefaultFirebaseOptions {
     appId: '1:1080194111365:ios:0ffd497b626095001b96ec',
     messagingSenderId: '1080194111365',
     projectId: 'fir-login-demo-8a89a',
-    storageBucket: 'fir-login-demo-8a89a.appspot.com',
+    storageBucket: 'fir-login-demo-8a89a.firebasestorage.app',
     iosBundleId: 'com.example.firebaseLoginDemo',
   );
 
