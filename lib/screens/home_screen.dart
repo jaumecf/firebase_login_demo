@@ -37,11 +37,13 @@ class HomeScreen extends StatelessWidget {
               style: textStyle,
               textAlign: TextAlign.center,
             ),
-            Text(
-              loginProvider.user!.uid,
-              style: textStyle,
-              textAlign: TextAlign.center,
-            ),
+            loginProvider.user != null
+                ? Text(
+                    loginProvider.user!.uid,
+                    style: textStyle,
+                    textAlign: TextAlign.center,
+                  )
+                : Text("Bye!")
           ],
         ),
       ),
